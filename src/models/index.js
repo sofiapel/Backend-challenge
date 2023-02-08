@@ -1,6 +1,10 @@
 require('dotenv').config();
 // import { DataSource } from "typeorm";
-var typeorm = require("typeorm")
+var typeorm = require("typeorm");
+const company = require('../company');
+const address = require('./address');
+const user = require('./user');
+
 const {
     DB_PORT,DB_HOST,DB_USERNAME,DB_PASSWORD,DATABASE
   } = process.env;
@@ -12,11 +16,11 @@ const AppDataSource = new typeorm.DataSource({
     username: DB_USERNAME,
     password: DB_PASSWORD,
     database: DATABASE,
-    // synchronize: true,
-    // logging: true,
-    // entities: [Post, Category],
-    // subscribers: [],
-    // migrations: [],
+    synchronize: true,
+    logging: true,
+    entities: [user,company,address],
+    subscribers: [],
+    migrations: [],
 })
 
 module.exports = AppDataSource;
