@@ -18,21 +18,11 @@ module.exports = new EntitySchema({
         email: {
             type: "varchar",
         },
-        //address???
         phone: {
-            type:"int"
+            type:"varchar"
         },
         website: {
             type: "varchar",
         }
-        //company???
-    },
-    relations: {
-        ["Address"]: {
-            target: "Address",
-            type: "one-to-one",
-            joinTable: true,
-            cascade: true,
-        },
-    },
+    }
 })
