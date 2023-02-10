@@ -18,6 +18,23 @@ async function main() {
   try {
     await AppDataSource.initialize();
     await client.connect();
+    console.log(await AppDataSource.getRepository(user).find({}))
+
+
+    if(!(await AppDataSource.getRepository(user).find({})).length){
+      const response = await axios.get(
+        "https://jsonplaceholder.typicode.com/users"
+      );
+      response.data.map((u) => delete u.id)
+  
+      AppDataSource
+      .createQueryBuilder()
+      .insert()
+      .into(user)
+      .values(response.data)
+      .execute()
+
+    }
 
     // Run the server!
     fastify.listen({ port: 3000 }, (err) => {
@@ -33,27 +50,6 @@ async function main() {
 }
 
 main();
-
-// Declare a route
-// fastify.get('/', async (req, res) => {
-//   try {
-//     const response = await axios.get(
-//       "https://jsonplaceholder.typicode.com/users"
-//     );
-//     response.data.map((u) => delete u.id)
-
-//     AppDataSource
-//     .createQueryBuilder()
-//     .insert()
-//     .into(user)
-//     .values(response.data)
-//     .execute()
-
-//     res.send(response.data).status(200)
-//   }catch(e){
-//     res.send(e)
-//   }
-// })
 
 
 fastify.get("/users", async (req, res) => {
@@ -76,7 +72,6 @@ fastify.get("/users", async (req, res) => {
   }
 });
 
-//get one user by attribute
 fastify.get("/user", async (req, res) => {
   try {
     const queryKey = Object.keys(req.query);
@@ -111,15 +106,12 @@ fastify.get("/user", async (req, res) => {
       }
     }
 
-    //busqueda en base de datos
-
     res.send(u).status(200);
   } catch (e) {
     res.send(e);
   }
 });
 
-//Le falta pispear el datasource
 fastify.get("/user/:id", async (req, res) => {
   try {
     const u = await AppDataSource.getRepository(user).findOneBy({
@@ -127,7 +119,7 @@ fastify.get("/user/:id", async (req, res) => {
     });
 
     if (!u) {
-      res.send("User not found").status(400);
+      res.send("User not found").status(404);
     }
 
     res.send(u).status(200);
@@ -138,10 +130,6 @@ fastify.get("/user/:id", async (req, res) => {
 
 fastify.delete("/user/:id", async (req, res) => {
   try {
-    //me falta el delete de la base de datos
-
-    console.log("id: ", req.params.id);
-
     AppDataSource.createQueryBuilder()
       .delete()
       .from(user)
